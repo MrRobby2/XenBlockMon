@@ -55,7 +55,7 @@ display_banner()
 
 # Check if an account address was provided as a command-line argument
 if len(sys.argv) < 2:
-    print("Usage: python3 script.py <account_address>")
+    print("Usage: python3 XenBlockMonitor.py <account_address>")
     sys.exit(1)
 
 # Get the account address from the command-line argument
@@ -68,10 +68,10 @@ while True:
     balance_xblk = 0
 
     # Query total number of blocks in the network
-    response = send_rpc_request("eth_blockNumber")
+    response = send_custom_request("total_blocks")
     if response:
-        total_network_blocks = int(response.get('result'), 16)  # Convert from hex to decimal
-
+        total_network_blocks = response.get('total_blocks_top100')
+ 
     # Query total number of blocks for the account
     response = send_custom_request("total_blocks2", {"account": account})
     if response:
@@ -97,3 +97,4 @@ while True:
         sys.stdout.flush()
         time.sleep(1)
     print("\rRefreshing now... ")
+    
