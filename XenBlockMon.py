@@ -1,4 +1,5 @@
 import json
+import os
 import requests
 import time
 import sys
@@ -49,6 +50,7 @@ def send_custom_request(endpoint, params=None):
         return None
 
 # Display banner
+os.system("clear")
 display_banner()
 
 # Check if an account address was provided as a command-line argument
@@ -82,7 +84,7 @@ while True:
         balance_xblk = balance_wei / 10**18  # Convert from Wei to X.BLK
 
     # Display all information
-    print(f"🕒 Current Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"\r🕒 Current Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"📊 Total number of blocks in the network: \033[93m{total_network_blocks}\033[0m")
     print(f"📈 Total number of blocks for account: \033[93m{total_account_blocks}\033[0m")
     print(f"💸 Balance of account: \033[93m{balance_xblk} X.BLK\033[0m")
@@ -91,7 +93,7 @@ while True:
     # Countdown for next update on the same line
     sys.stdout.write("Next update in: ")
     for i in range(30, 0, -1):
-        sys.stdout.write(f"\rNext update in: {i} seconds")
+        sys.stdout.write(f"\rNext update in: {i} ")
         sys.stdout.flush()
         time.sleep(1)
     print("\rRefreshing now... ")
