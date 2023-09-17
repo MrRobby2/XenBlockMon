@@ -18,7 +18,7 @@ def display_banner():
 ╚═╝░░╚═╝╚══════╝╚═╝░░╚══╝  ╚═════╝░╚══════╝░╚════╝░░╚════╝░╚═╝░░╚═╝╚═════╝░
     """
     print(banner)
-
+    print("Created by TreeCityWes.eth.")
 # Function to query RPC
 def send_rpc_request(method, params=None, request_id=1):
     headers = {'Content-Type': 'application/json'}
@@ -36,7 +36,7 @@ def send_rpc_request(method, params=None, request_id=1):
         return None
 
 # Constants for RPC and Custom Server URLs
-RPC_URL = "http://xenminer.mooo.com:5555"
+RPC_URL = "http://xenminer.mooo.com:81"
 CUSTOM_SERVER_URL = "http://xenminer.mooo.com"
 
 # Function to query custom server
@@ -51,9 +51,13 @@ def send_custom_request(endpoint, params=None):
 # Display banner
 display_banner()
 
-# Get account address from user
-print(f"ENS is case-sensitive.")
-account = input("Please enter your XenBlocks account address: ")
+# Check if an account address was provided as a command-line argument
+if len(sys.argv) < 2:
+    print("Usage: python3 script.py <account_address>")
+    sys.exit(1)
+
+# Get the account address from the command-line argument
+account = sys.argv[1]
 
 while True:
     # Initialize variables
@@ -78,20 +82,11 @@ while True:
         balance_xblk = balance_wei / 10**18  # Convert from Wei to X.BLK
 
     # Display all information
-    print("\n🔥🔥🔥 XENBlock Mon 🔥🔥🔥")
-    print(f"🌐 Network Name: XenBLOCKs")
-    print(f"💻 RPC URL: {RPC_URL}")
     print(f"🕒 Current Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print(f"🔗 Chain ID: 108016")
-    print(f"💰 Currency: X.BLK")
-    print(f"\n👤 Account Address: {account}")
     print(f"📊 Total number of blocks in the network: \033[93m{total_network_blocks}\033[0m")
-    print(f"📈 Total number of blocks for account {account}: \033[93m{total_account_blocks}\033[0m")
-    print(f"💸 Balance of account {account}: \033[93m{balance_xblk} X.BLK\033[0m")
+    print(f"📈 Total number of blocks for account: \033[93m{total_account_blocks}\033[0m")
+    print(f"💸 Balance of account: \033[93m{balance_xblk} X.BLK\033[0m")
     print("◼️" * 30)
-    
-    # Wait for 30 seconds before the next update
-    print("Created by TreeCityWes.eth. Press CTRL+C to Exit.")
 
     # Countdown for next update on the same line
     sys.stdout.write("Next update in: ")
