@@ -60,6 +60,7 @@ if len(sys.argv) < 2:
 
 # Get the account address from the command-line argument
 account = sys.argv[1]
+account = account.lower()
 
 while True:
     # Initialize variables
