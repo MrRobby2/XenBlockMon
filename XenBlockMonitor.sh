@@ -9,6 +9,4 @@ if [ -z "$1" ]; then
 fi
 
 account="$1"
-
-echo "Starting synchronization using account: $account"
 python3 XenBlockMonitor.py "$account"
