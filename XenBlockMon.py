@@ -54,6 +54,7 @@ display_banner()
 # Get account address from user
 print(f"ENS is case-sensitive.")
 account = input("Please enter your XenBlocks account address: ")
+account = account.lower()
 
 while True:
     # Initialize variables
