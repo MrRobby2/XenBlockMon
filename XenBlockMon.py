@@ -36,9 +36,11 @@ def send_rpc_request(method, params=None, request_id=1):
     else:
         return None
 
-# Constants for RPC and Custom Server URLs
+#X.BLK
 RPC_URL = "http://xenminer.mooo.com:81"
 CUSTOM_SERVER_URL = "http://xenminer.mooo.com"
+#XUNI
+url_xuni = "http://xenminer.mooo.com/get_xuni_counts"
 
 # Function to query custom server
 def send_custom_request(endpoint, params=None):
@@ -67,6 +69,7 @@ while True:
     total_network_blocks = 0
     total_account_blocks = 0
     balance_xblk = 0
+    balance_xuni = 0
 
     # Query total number of blocks in the network
     response = send_custom_request("total_blocks")
@@ -78,17 +81,29 @@ while True:
     if response:
         total_account_blocks = response.get('total_blocks')
 
-    # Query balance of the account
+    # Query balance of the account XBLK
     response = send_rpc_request("eth_getBalance", [account])
     if response:
         balance_wei = int(response.get('result'), 16)  # Convert from hex to decimal
         balance_xblk = balance_wei / 10**18  # Convert from Wei to X.BLK
+   
+    # Query balance of the account XUNI
+    response = requests.get(url_xuni)
+    if response:
+        xuni_data = response.json()
+        for item in xuni_data:
+            account_tmp = item["account"].lower()
+            count = item["count"]
+            if account == account_tmp:
+                balance_xuni = count
+                break
 
     # Display all information
     print(f"\r🕒 Current Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"📊 Total number of blocks in the network: \033[93m{total_network_blocks}\033[0m")
     print(f"📈 Total number of blocks for account: \033[93m{total_account_blocks}\033[0m")
     print(f"💸 Balance of account: \033[93m{balance_xblk} X.BLK\033[0m")
+    print(f"💸 Balance of account: \033[93m{balance_xuni} XUNI\033[0m")
     print("◼️" * 30)
 
     # Countdown for next update on the same line
