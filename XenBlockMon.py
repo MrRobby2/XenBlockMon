@@ -5,8 +5,6 @@ import time
 import sys
 from datetime import datetime
 
-# THERE IS NO NEED TO EDIT THE SCRIPT. RUN THE SCRIPT AS IS! 
-
 # Function to display banner
 def display_banner():
     banner = """
@@ -37,11 +35,11 @@ def send_rpc_request(method, params=None, request_id=1):
         return None
 
 #X.BLK
-RPC_URL = "http://xenminer.mooo.com:81"
+RPC_URL = "http://xenminer.mooo.com:5555"
 CUSTOM_SERVER_URL = "http://xenminer.mooo.com"
 #XUNI
 url_xuni = "http://xenminer.mooo.com/get_xuni_counts"
-
+url_blocks_per_day = "http://xenminer.mooo.com/blockrate_per_day"
 # Function to query custom server
 def send_custom_request(endpoint, params=None):
     url = f"{CUSTOM_SERVER_URL}/{endpoint}"
@@ -68,8 +66,11 @@ while True:
     # Initialize variables
     total_network_blocks = 0
     total_account_blocks = 0
+    blocks_per_day = 0
     balance_xblk = 0
     balance_xuni = 0
+    balance_XNM = 0
+    account_rank = 0
 
     # Query total number of blocks in the network
     response = send_custom_request("total_blocks")
@@ -81,13 +82,17 @@ while True:
     if response:
         total_account_blocks = response.get('total_blocks')
 
-    # Query balance of the account XBLK
-    response = send_rpc_request("eth_getBalance", [account])
+    
+    # Query super block balance
+    response = requests.get(f"{CUSTOM_SERVER_URL}/get_super_blocks/{account}")
     if response:
-        balance_wei = int(response.get('result'), 16)  # Convert from hex to decimal
-        balance_xblk = balance_wei / 10**18  # Convert from Wei to X.BLK
+        super_block_data = response.json()
+        balance_xblk = super_block_data.get("super_blocks")
+        balance_wei = int(requests.get(f"{CUSTOM_SERVER_URL}/get_balance/{account}").json().get("balance", 0))
+        balance_XNM = balance_wei
+        
    
-    # Query balance of the account XUNI
+    # Query XUNI balance
     response = requests.get(url_xuni)
     if response:
         xuni_data = response.json()
@@ -98,12 +103,29 @@ while True:
                 balance_xuni = count
                 break
 
+    # Query balance of the account XUNI
+    response = requests.get(url_blocks_per_day)
+    if response:
+        xuni_data = response.json()
+        for item in xuni_data:
+            account_tmp = item["account"].lower()
+            count = item["num_blocks"]
+            if account == account_tmp:
+                blocks_per_day = count
+                break
+
+
+
     # Display all information
     print(f"\r🕒 Current Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print(f"📊 Total number of blocks in the network: \033[93m{total_network_blocks}\033[0m")
-    print(f"📈 Total number of blocks for account: \033[93m{total_account_blocks}\033[0m")
-    print(f"💸 Balance of account: \033[93m{balance_xblk} X.BLK\033[0m")
-    print(f"💸 Balance of account: \033[93m{balance_xuni} XUNI\033[0m")
+    print(f"📈 Blocks in the network: \033[93m{total_network_blocks}\033[0m")
+    print(f"")
+    #print(f"💸 RANK: \033[93m{account_rank} \033[0m")
+    print(f"📈 TOTAL BLOCKS MINED:\t\033[93m{total_account_blocks}\033[0m")
+    print(f"💸 XENIUM ($XNM):\t\033[93m{balance_XNM} \033[0m")
+    print(f"💸 XUNI BLOCKS: \t\033[93m{balance_xuni}\033[0m")
+    print(f"💸 SUPER BLOCKS:\t\033[93m{balance_xblk}\033[0m")
+    print(f"📈 BLOCKRATE PER DAY:\t\033[93m{blocks_per_day}\033[0m")
     print("◼️" * 30)
 
     # Countdown for next update on the same line
